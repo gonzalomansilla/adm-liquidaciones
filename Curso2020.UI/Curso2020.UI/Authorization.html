@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Liquidations Managment</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#nav").load("navbar.html");
+
+            $("#btnAceptar").click(function () {
+                let token = localStorage.getItem("token");
+                if (token == null || token == "") {
+                    alert("Error, vuelva a ingresar a su cuenta");
+                    window.location = "/Login.html";
+                } else {
+                    let fecha = $("#fecha").val();
+                    if (fecha != "" && fecha != null) {
+                        let data = fecha;
+                        debugger;
+                        $.ajax({
+                            url: "https://localhost:5001/api/Liquidations/AuthorizeLiquidation",
+                            method: "POST",
+                            crossDomain: true,
+                            headers: {
+                                "Accept": "application/json",
+                                "Authorization": token,
+                            },
+                            data: JSON.stringify(data),
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            success: function () {
+                                var r = confirm("Autorización ingresada exitosamente!\n¿Desea ingresar otra autorización?");
+                                if (r == false) {
+                                    window.location = "/Tabla.html";
+                                }
+                            },
+                            error: function (xhr) {
+                                let response = JSON.parse(xhr.responseText);
+                                switch (xhr.status) {
+                                    case 401:
+                                        alert(response.message)
+                                        window.location = "/Login.html";
+                                        break;
+                                    case 400:
+                                    case 404:
+                                        alert(response.message)
+                                        break;
+                                    default:
+                                        alert(JSON.stringify(xhr));
+                                }
+                            }
+                        });
+                    } else { alert("Complete los campos") }
+                }
+            });
+
+            let token = localStorage.getItem("token");
+            if (token == null || token == "") {
+                alert("Error, vuelva a ingresar a su cuenta");
+                window.location = "/Login.html";
+            } else {
+                $.ajax({
+                    url: "https://localhost:5001/api/Liquidations/GetAuthorizations",
+                    method: "GET",
+                    crossDomain: true,
+                    headers: {
+                        "Accept": "application/json",
+                        "Authorization": token,
+                    },
+                    dataType: 'json',
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        if (typeof data !== "object") {
+                            data = data.d || data;
+                            data = JSON.parse(data);
+                        }
+                        let html = "";
+                        $.each(data.headers, function (index, value) {
+                            html += "<th>" + value + "</th>";
+                        });
+                        html = "<tr>" + html + "</tr>";
+                        let row = "";
+                        $.each(data.rows, function (index, value) {
+                            row = "";
+                            $.each(value, function (index, value) {
+                                row += "<td>" + value + "</td>";
+                            });
+                            html += "<tr>" + row + "</tr>"
+                        });
+                        html = "<table class='table'>" + html + "</table>"
+                        document.getElementById("tabla").innerHTML = html;
+                    },
+                    error: function (xhr) {
+                        let response = JSON.parse(xhr.responseText);
+                        switch (xhr.status) {
+                            case 401:
+                                alert(response.message)
+                                window.location = "/Login.html";
+                                break;
+                            case 400:
+                            case 404:
+                                alert(response.message)
+                                break;
+                            default:
+                                alert(JSON.stringify(xhr));
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="nav"></div>
+    <div class="container">
+        <h2>Autorizar liquidación</h2>
+        <hr />
+        <div class="form-group">
+            <label class="control-label col-sm-2">Fecha:</label>
+            <input type="month" id="fecha" name="fecha" required>
+        </div>
+        <div class="col-sm-10">
+            <button class="btn btn-primary" id="btnAceptar">Enviar</button>
+            <button class="btn btn-secondary">Cancelar</button>
+        </div>
+        <br />
+        <h1>Historial de autorizaciones</h1>
+        <div id="tabla"></div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,614 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Empleados</title>
+    <script src="js/jquery.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            background-color: cadetblue;
+            width: 100%;
+            margin: 0;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        header {
+            background-color: darkslategrey;
+            height: 80px;
+            text-align: center;
+        }
+
+            header a {
+                color: white;
+                font-size: 50px;
+            }
+
+        #ContenedorPrincipal {
+            display: flex;
+            flex-direction: row;
+            margin: 10px;
+        }
+
+        .botonera {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .botones {
+            width: 180px;
+            margin: 15px;
+            background-color: darkslategrey;
+            height: 40px;
+            color: white;
+        }
+
+            .botones:hover {
+                background-color: dodgerblue;
+            }
+
+        #btnAtrasBaja {
+            width: 100px;
+            height: 30px;
+        }
+
+        #btnAceptarBaja {
+            width: 100px;
+            height: 30px;
+        }
+
+        #ContenedorBaja {
+            margin: auto;
+            text-align: center;
+            display: inline-block;
+            width: 300px;
+        }
+
+        #ContenedorAlta {
+            margin: auto;
+            width: 430px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        #PuestosAlta {
+            width: 174px;
+            height: 22px;
+        }
+
+
+        .botonesAlta {
+            width: 100px;
+            margin: 15px;
+            height: 30px;
+            color: white;
+            background-color: darkslategrey;
+        }
+
+            .botonesAlta:hover {
+                background-color: dodgerblue;
+            }
+
+
+        #ContenedorModificacion {
+            margin: auto;
+            display: inline-block;
+            text-align: center;
+            width: 400px;
+        }
+
+        #btnAceptarModificacion {
+            width: 100px;
+            height: 30px;
+        }
+
+        #btnAtrasModificacion {
+            width: 100px;
+            height: 30px;
+        }
+
+        #txtModificacion {
+            text-align: right;
+            padding: 0.7px;
+            display: table-cell;
+        }
+
+        #PuestosModificacion {
+            width: 173px;
+            height: 24px;
+        }
+
+        #tablaEmpleado {
+            display: flex;
+            justify-content: center;
+        }
+
+        .table {
+            margin-top: 10px;
+            border: 2px solid;
+            border-collapse: collapse;
+            width: 950px;
+        }
+
+            .table th, td {
+                width: 14%;
+                text-align: center;
+                border: 1px solid;
+            }
+
+            .table tr {
+                height: 25px;
+            }
+
+        .btnTabla {
+            background-color: darkslategrey;
+            margin-top: 10px;
+            color: white;
+        }
+
+        #txtNombreEmpresa {
+            background-color: cadetblue;
+            color: antiquewhite;
+            height: 100px;
+            width: 600px;
+            font-size: 100px;
+            border: 1px solid cadetblue;
+            display: flex;
+            text-align: center;
+            padding: 200px;
+        }
+
+        footer {
+            margin-left: 20px;
+        }
+
+        #ContenedorBuscarEmpleados {
+            margin: auto;
+            display: inline-block;
+            text-align: center;
+            width: 400px;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+
+            $("#ContenedorAlta").hide();
+            $("#ContenedorModificacion").hide();
+            $("#ContenedorBaja").hide();
+            $("#ContenedorGrilla").hide();
+            $("#ContenedorBuscarEmpleados").hide();
+
+
+            let cuitEmpresa = localStorage.getItem("cuitEmpresa");
+            let nombreEmpresa = localStorage.getItem("nombreEmpresa");
+
+            let elementoNombre = document.getElementById("txtNombreEmpresa");
+            elementoNombre.value = nombreEmpresa;
+
+            $.fn.dibujarTabla = function (data) {
+                let html = "";
+                $.each(data.headers, function (index, value) {
+                    html += "<th>" + value + "</th>";
+                });
+                html = "<tr>" + html + "</tr>";
+                let row = "";
+                $.each(data.rows, function (index, value) {
+                    row = "";
+                    $.each(value, function (index, value) {
+                        row += "<td>" + value + "</td>";
+                    });
+                    html += "<tr>" + row + "</tr>"
+                });
+                html = "<table class='table'>" + html + "</table>"
+                this.html(html);
+            }
+
+            $.fn.crearSelectPuestos = function () {
+                var select = this;
+                $.ajax({
+                    url: "https://localhost:5001/api/EmpleadoController/CheckPositions/" + cuitEmpresa,
+                    method: "GET",
+                    dataType: 'json',
+                    contentType: "application/json; charset=utf-8",
+                    crossDomain: true,
+                    headers: {
+                        "Accept": "application/json",
+                    },
+                    success: function (data) {
+                        for (var i in data) {
+                            var option = document.createElement("option");
+                            option.value = data[i]["id"];
+                            option.text = data[i]["descripcion"];
+                            select.append(option);
+                        }
+                    },
+                    error: function (error) {
+                        let mensaje = error.responseJSON;
+                        alert(mensaje.message);
+                    },
+                })
+            }
+
+            $("#btnSalir").click(function () {
+                window.location = "Navbar.html";
+            })
+
+            /*******************    MOSTRAR EMPLEADOS *************************/
+            $("#btnMostrarEmpleados").click(function () {
+                let cuitIngresado = cuitEmpresa;
+                if (cuitIngresado != "" && cuitIngresado.length > 9 && cuitIngresado.length < 12) {
+
+                    $.ajax({
+                        url: "https://localhost:5001/api/EmpleadoController/GetGrilla/" + cuitIngresado,
+                        method: "GET",
+                        dataType: 'json',
+                        contentType: "application/json; charset=utf-8",
+                        crossDomain: true,
+                        headers: {
+                            "Accept": "application/json",
+                        },
+                        success: function (respuesta) {
+                            $("#tablaEmpleado").dibujarTabla(respuesta);
+
+                            $("#ContenedorGrilla").show();
+                            $("#ContenedorPrincipal").hide();
+                        },
+                        error: function (error) {
+                            let mensaje = error.responseJSON;
+                            alert(mensaje.message);
+                        },
+
+                    })
+                }
+                else {
+                    alert("Ingrese cuit valido");
+                }
+            })
+
+            $("#btnVolverDeGrilla").click(function () {
+                $("#ContenedorGrilla").hide();
+                $("#ContenedorPrincipal").show();
+            })
+
+            /***********************    ALTA    *************************/
+
+            $("#btnAlta").click(function () {
+                $("#ContenedorPrincipal").hide();
+                $("#ContenedorAlta").show();
+                $("#PuestosAlta").crearSelectPuestos();
+
+                $("#btnAceptarAlta").click(function () {
+
+                    let dni = parseInt($("#dniInputAlta").val());
+                    let nombre = $("#nombreInputAlta").val();
+                    let apellido = $("#apellidoInputAlta").val();
+                    let idPuesto = parseInt($("#PuestosAlta").val());
+
+                    if (dni > 7000000 && dni < 500000000 && nombre.length > 3 && apellido.length > 3 && idPuesto != null) {
+                        let data = { Dni: String(dni), CuitEmpresa: cuitEmpresa, IdPuesto: idPuesto, Nombre: nombre, Apellido: apellido }
+
+                        $.ajax({
+                            url: "https://localhost:5001/api/EmpleadoController/AddEmployee",
+                            method: "POST",
+                            data: JSON.stringify(data),
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            crossDomain: true,
+                            headers: {
+                                "Accept": "application/json",
+                            },
+                            success: function (data) {
+                                if (typeof data !== "object") {
+                                    data = data.d || data;
+                                    data = JSON.parse(data);
+                                }
+
+                                let message = data.message || data.Message;
+
+                                alert(message);
+
+                                $("#ContenedorAlta").hide();
+                                window.location.reload();
+                                $("#ContenedorPrincipal").show();
+
+                            },
+                            error: function (xhr) {
+                                let response = JSON.parse(xhr.responseText);
+                                switch (xhr.status) {
+                                    case 400:
+                                    case 404:
+                                        alert(response.message);
+                                        break;
+                                    default:
+                                        alert(JSON.stringify(xhr));
+                                }
+                            },
+                        })
+                    }
+                    else {
+                        alert("Verifique los datos ingresados.");
+                    }
+                })
+            })
+            $("#btnAtrasAlta").click(function () {
+                $("#ContenedorAlta").hide();
+                window.location.reload();
+                $("#ContenedorPrincipal").show();
+            })
+
+            /***********************    Buscar    *************************/
+            $("#btnBuscar").click(function () {
+                $("#ContenedorPrincipal").hide();
+                $("#tabla").hide();
+                $("#ContenedorBuscarEmpleados").show();
+
+                $("#btnAceptarDni").click(function () {
+                    $(".container").show();
+                    let dniIngresado = $("#buscarDni").val();
+                    if (dniIngresado.length == 8) {
+                        $.ajax({
+                            url: "https://localhost:5001/api/EmpleadoController/GetByDni/" + dniIngresado,
+                            method: "GET",
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            crossDomain: true,
+                            headers: {
+                                "Accept": "application/json",
+                            },
+                            success: function (data) {
+                                $("#tableBody").empty();
+
+                                var fila = "<tr>" +
+                                    "<td>" + data.dni + "</td>" +
+                                    "<td>" + data.cuitEmpresa + "</td>" +
+                                    "<td>" + data.nombre + "</td>" +
+                                    "<td>" + data.apellido + "</td>" +
+                                    "<td>" + data.horasTrabajadasPorMes + "</td>" +
+                                    "</tr>";
+                                $("#tableBody").append(fila);
+                                $("#tabla").show();
+                            },
+
+                            error: function (data) {
+                                $("#tabla").hide();
+                                switch (data.status) {
+                                    case 400:
+                                        alert("El dni debe tener al menos 8 digitos");
+                                        break;
+                                    case 404:
+                                        alert("No se encontro la persona con DNI " + dniIngresado)
+                                        break;
+                                    default:
+                                        alert("Ocurrio un error inesperado");
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        alert("Ingrese Dni valido");
+                    }
+                })
+            })
+            $("#btnAtrasDni").click(function () {
+            $("#ContenedorBuscarEmpleados").hide();
+            window.location.reload();
+            $("#ContenedorPrincipal").show();
+            })
+
+            /***********************    Modificar    *************************/
+            $("#btnModificar").click(function () {
+                $("#ContenedorPrincipal").hide();
+                $("#ContenedorModificacion").show();
+                $("#PuestosModificacion").crearSelectPuestos();
+
+                $("#btnAceptarModificacion").click(function () {
+
+                    let DNI = parseInt($("#TxtDni").val());
+                    let idPuesto = parseInt($("#PuestosModificacion").val());
+                    let horas = parseInt($("#TxtHorasTrabajas").val());
+
+                    if (DNI > 6000000) {
+
+                        let data = { Dni: String(DNI), CuitEmpresa: cuitEmpresa, IdPuesto: idPuesto, HorasTrabajadasPorMes: horas };
+
+                        $.ajax({
+                            url: "https://localhost:5001/api/EmpleadoController/ModifyEmployee",
+                            method: "POST",
+                            data: JSON.stringify(data),
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            crossDomain: true,
+                            headers: {
+                                "Accept": "application/json",
+                            },
+                            success: function (data) {
+
+                                if (typeof data !== "object") {
+                                    data = data.d || data;
+                                    data = JSON.parse(data);
+                                }
+                                let message = data.message || data.Message;
+                                alert(message);
+                                $("#ContenedorModificacion").hide();
+                                window.location.reload();
+                                $("#ContenedorPrincipal").show();
+
+                            },
+                            error: function (xhr) {
+                                let response = JSON.parse(xhr.responseText);
+
+                                switch (xhr.status) {
+                                    case 400:
+                                    case 404:
+                                        alert(response.message);
+                                        break;
+                                    default:
+                                        alert(JSON.stringify(xhr));
+                                }
+                            },
+                        })
+                    }
+
+                    else {
+                        alert("Ingrese numeros, no letras");
+                    }
+                })
+            })
+            $("#btnAtrasModificacion").click(function () {
+                $("#ContenedorModificacion").hide();
+                window.location.reload();
+                $("#ContenedorPrincipal").show();
+            })
+
+            /***********************    Baja    *************************/
+            $("#btnBaja").click(function () {
+
+                $("#ContenedorPrincipal").hide();
+                $("#ContenedorBaja").show();
+
+                $("#btnAceptarBaja").click(function () {
+
+                    let DNI = parseInt($("#TxtBaja").val());
+
+                    if (DNI > 6000000) {
+
+                        let data = { Dni: String(DNI), CuitEmpresa: cuitEmpresa };
+
+                        $.ajax({
+                            url: "https://localhost:5001/api/EmpleadoController/RemoveEmployee",
+                            method: "POST",
+                            data: JSON.stringify(data),
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            crossDomain: true,
+                            headers: {
+                                "Accept": "application/json",
+                            },
+                            success: function (data) {
+
+                                if (typeof data !== "object") {
+                                    data = data.d || data;
+                                    data = JSON.parse(data);
+                                }
+                                let message = data.message || data.Message;
+                                alert(message);
+                                $("#ContenedorBaja").hide();
+                                window.location.reload();
+                                $("#ContenedorPrincipal").show();
+
+                            },
+                            error: function (xhr) {
+                                let response = JSON.parse(xhr.responseText);
+
+                                switch (xhr.status) {
+                                    case 400:
+                                    case 404:
+                                        alert(response.message);
+                                        break;
+                                    default:
+                                        alert(JSON.stringify(xhr));
+                                }
+                            },
+                        })
+                    }
+                    else {
+                        alert("Complete los campos");
+                    }
+                })
+            })
+            $("#btnAtrasBaja").click(function () {
+                $("#ContenedorBaja").hide();
+                window.location.reload();
+                $("#ContenedorPrincipal").show();
+            })
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <a>Bienvenido</a>
+    </header>
+
+    <div id="ContenedorPrincipal">
+        <span class="botonera">
+            <input type="button" value="Mostrar Empleados" class="botones" id="btnMostrarEmpleados" />
+            <input type="button" value="Alta Empleado" class="botones" id="btnAlta" />
+            <input type="button" value="Buscar empleado" class="botones" id="btnBuscar" />
+            <input type="button" value="Modificar empleado" class="botones" id="btnModificar" />
+            <input type="button" value="Baja empleado" class="botones" id="btnBaja" />
+            <input type="button" value="Volver" id="btnSalir" class="botones" />
+        </span>
+        <span>
+            <input type="text" id="txtNombreEmpresa" readonly />
+        </span>
+
+    </div>
+
+    <div id="ContenedorGrilla">
+        <div id="tablaEmpleado"></div>
+        <div id="tablaEmpleado"> <input type="button" value="Volver" id="btnVolverDeGrilla" class="btnTabla" /></div>
+    </div>
+
+    <div id="ContenedorAlta">
+        <h3> Ingrese los datos del empleado a dar de alta: </h3>
+        <p> Nombre: <input id="nombreInputAlta" type="text" /> </p>
+        <p> Apellido: <input id="apellidoInputAlta" type="text" /> </p>
+        <p> DNI:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="dniInputAlta" type="text" /> </p>
+        <p> Puesto:&nbsp;&nbsp;&nbsp;<select id="PuestosAlta"> <option>Seleccione un puesto...</option></select></p>
+        <p>
+            <button class="botonesAlta" id="btnAtrasAlta"> Atrás </button>
+            <button class="botonesAlta" id="btnAceptarAlta"> Aceptar </button>
+        </p>
+
+    </div>
+
+    <div id="ContenedorBuscarEmpleados">
+        <p> <ins>Ingrese el dni del empleado a buscar </ins></p>
+        <div>
+            <p>Dni: <input id="buscarDni" type="text" name="DNI" value="" /></p>
+        </div>
+
+        <button class="botones" id="btnAtrasDni"> Atras </button>
+        <button class="botones" id="btnAceptarDni"> Aceptar </button>
+        <div id="tabla">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Dni</th>
+                        <th>CuitEmpresa</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>HorasTrabajasPorMes</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table><br />
+        </div>
+    </div>
+
+    <div id="ContenedorModificacion">
+        <p> <ins>Ingrese el dni del empleado a modificar</ins></p>
+        <div id="txtModificacion">
+            <p>Dni: <input id="TxtDni" type="text" name="DNI" value="" /></p>
+            <p>Puesto: <select id="PuestosModificacion"> <option>Seleccione nuevo puesto...</option></select></p>
+            <p> Horas trabajadas:<input id="TxtHorasTrabajas" type="text" name="Horas" value="" /> </p>
+        </div>
+        <button class="botones" id="btnAtrasModificacion"> Atras </button>
+        <button class="botones" id="btnAceptarModificacion"> Aceptar </button>
+    </div>
+
+    <div id="ContenedorBaja">
+        <p><ins>Ingrese el dni del empleado a dar de baja</ins> </p>
+        <p>Dni: <input id="TxtBaja" type="text" name="baja" value="" /></p>
+        <button class="botones" id="btnAtrasBaja"> Atras </button>
+        <button class="botones" id="btnAceptarBaja"> Aceptar </button>
+    </div>
+
+</body>
+</html>

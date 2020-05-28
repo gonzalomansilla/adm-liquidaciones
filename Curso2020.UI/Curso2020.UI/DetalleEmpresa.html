@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="./js/jquery.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/DetalleEmpresa.js"></script>
+
+    <title></title>
+    <style>
+        .container {
+            width: 450px;
+            height: 100vh;
+        }
+
+        .containerModify {
+            width: 70%;
+            box-shadow: 2px 11px 20px #000;
+            padding: 30px;
+            margin: auto;
+        }
+
+        #modificarEmpresa {
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+    <nav id="navbar-example2" class="navbar navbar-light bg-light">
+        <h1 class="empresa">Empresas</h1>
+        <ul class="nav nav-pills">
+
+            <li class="nav-item"><a class="nav-link" href="VerEmpresas.html">Ver Empresas</a></li>
+
+        </ul>
+
+    </nav>
+
+    <div id="tabla"></div>
+
+    <button type="button" id="btnModificar" class="btn btn-primary">MODIFICAR DATOS</button>
+    <button type="button" id="btnDelete" class="btn btn-danger">ELIMINAR</button>
+
+    <div class="container">
+        <div id="modificarEmpresa" class="containerModify">
+            <form class="modificar">
+                <h3>Modificar Datos</h3>
+
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Nombre</label>
+                    <input type="text" class="form-control" id="txtnombre">
+                </div>
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Razon Social</label>
+                    <input type="text" class="form-control" id="txtrazonsocial">
+                </div>
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Direccion Empresa</label>
+                    <input type="text" class="form-control" id="txtdireccion">
+                </div>
+                <button type="button" id="modifyOk" class="btn btn-primary">Modificar</button>
+                <a class="link" id="volver" href="DetalleEmpresa.html">Volver</a>
+            </form>
+
+        </div>
+    </div>
+
+</body>
+</html>

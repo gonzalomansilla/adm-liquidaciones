@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Login</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <style>
+        .container {
+            line-height: 100vh;
+            text-align: center;
+        }
+
+        .container2 {
+            line-height: 100vh;
+            text-align: center;
+            display: block;
+            display: none;
+        }
+
+        .centered {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 100%;
+            width: 400px;
+        }
+
+        .centered2 {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 100%;
+        }
+
+        .controls {
+            max-width: 350px;
+            margin: 20px;
+        }
+
+        .label {
+            min-width: 140px;
+            float: left;
+            text-align: right;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+
+            $("#btnlogin").click(function () {
+                let nombreUsuario = $("#nombreUsuarioLogin").val();
+                let contrasenia = $("#contraseniaLogin").val();
+                if (nombreUsuario != "" && nombreUsuario.length >= 2 && contrasenia.length >= 10) {
+                    let data = { nombreUsuario: nombreUsuario, contrasenia: contrasenia };
+                    $.ajax({
+                        url: "https://localhost:5003/api/Security/Login",
+                        method: "POST",
+                        crossDomain: true,
+                        headers: {
+                            "Accept": "application/json",
+                        },
+                        data: JSON.stringify(data),
+                        dataType: 'json',
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            let token = data.guid;
+                            localStorage.setItem("token", token);
+                            let rol = data.rol;
+                            localStorage.setItem("rol", rol);
+
+                            if (data.rol == "empresa" || data.rol == "Empresa" || data.rol == "Empleador" || data.rol == "EMPRESA") {
+                                localStorage.setItem("cuitEmpresa", data.dniCuit);
+                                localStorage.setItem("nombreEmpresa", data.nombreUsuario);
+                            }
+                            window.location = "/Tabla.html";
+                        },
+                        error: function (xhr) {
+                            let response = JSON.parse(xhr.responseText);
+                            switch (xhr.status) {
+                                case 400:
+                                case 401:
+                                    alert(response.message)
+                                    break;
+                                default:
+                                    alert(JSON.stringify(xhr));
+                            }
+                        }
+                    });
+                }
+                else { alert("Complete los campos") }
+            })
+        });
+
+        $(document).ready(function () {
+            $("#CrearUsuario").click(function () {
+                $('.container').hide('slow');
+                $('.container2').show('slow');
+            });
+
+            $("#btnVolverLogin").click(function () {
+                $('.container2').hide('slow');
+                $('.container').show('slow');
+
+            });
+
+            $("#Crear").click(function () {
+                let nombreUsuario = $("#nombreUsuarioCrear").val();
+                let contrasenia = $("#contraseniaCrear").val();
+                let dnicuit = $("#dnicuit").val();
+                let rol = $("#rol").val();
+                if (nombreUsuario != "" && nombreUsuario != null && nombreUsuario.length >= 2 && contrasenia != "" && contrasenia.length >= 10 && 
+                    dnicuit != "" && dnicuit != null && dnicuit.length != 7 || dnicuit.length != 8 && 
+                    rol != "" && rol != null && rol == "Empleado" || rol == "Empresa" || rol == "Liquidador") {
+                        let data = { nombreUsuario: nombreUsuario, contrasenia: contrasenia, dniCuit: dnicuit, rol: rol }
+                        $.ajax({
+                            url: "https://localhost:5003/api/Security/CreateUser",
+                            method: "PUT",
+                            data: JSON.stringify(data),
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                if (typeof data !== "object") {
+                                    data = data.d || data;
+                                    data = JSON.parse(data);
+                                }
+                                let message = data.message || data.Message;
+                                alert(message);
+                                $('.container2').hide('slow');
+                                $('.container').show('slow');
+                            },
+                            error: function (xhr) {
+                                let response = JSON.parse(xhr.responseText);
+                                switch (xhr.status) {
+                                    case 401:
+                                        alert(response.message)
+                                        break;
+                                    case 400:
+                                    case 404:
+                                        alert(response.message)
+                                        break;
+                                    default:
+                                        alert(JSON.stringify(xhr));
+                                }
+                            }
+                        });
+                }else { alert("Complete los campos") }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="centered">
+            <div class="loginBox">
+                <h2>Login</h2><hr />
+                <div class="form-group">
+                    <input id="nombreUsuarioLogin" class="form-control input-lg" type="text" placeholder="Nombre de usuario" required>
+                </div>
+                <div class="form-group">
+                    <input id="contraseniaLogin" class="form-control input-lg" type="password" placeholder="Contraseña" aria-label="Contraseña" required>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm " id="btnlogin">Ingresar</button>
+                <hr>¿No estás registrado? <br />
+                <a id="CrearUsuario" style="color:#007bff">Crea una cuenta</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container2">
+        <div class="centered2">
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <h3>Registrarse</h3><hr />
+
+                    <input id="nombreUsuarioCrear" type="text" class="form-control" name="nombre" placeholder="Nombre de Usuario" required><br />
+                    <input id="contraseniaCrear" type="password" name="password" value="" autocomplete="off" class="form-control" placeholder="Contraseña" required><br />
+                    <input id="dnicuit" type="number" min="2000000" name="dnicuit" value="" autocomplete="off" class="form-control" placeholder="DNI o CUIT" required><br />
+                    <select class="form-control" id="rol" required>
+                        <option value="" disabled selected >Perfil del Usuario</option>
+                        <option value="Empleado">Empleado</option>
+                        <option value="Empresa">Empresa</option>
+                        <option value="Liquidador">Liquidador</option>
+                    </select><br />
+
+                    <button id="Crear" class="btn btn-success center btn-dark">Registrarme</button>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <h3>Login</h3><hr />
+                    ¿Ya estás registrado?<br />
+                    <a id="btnVolverLogin" style="color:#007bff">Ingresa aquí!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

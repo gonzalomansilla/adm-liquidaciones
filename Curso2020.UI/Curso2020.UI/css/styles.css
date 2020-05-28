@@ -1,0 +1,90 @@
+﻿.table {
+    background-color: #00adb5;
+    border: 1px black solid;
+    margin: auto;
+}
+
+#Empleado {
+    display: none;
+}
+
+#Empresa {
+    display: none;
+}
+
+#Liquidador {
+    display: none;
+}
+
+.table tr td {
+    min-width: 100px;
+    border: 1px black solid;
+}
+
+.container {
+    line-height: 100vh;
+    text-align: center;
+}
+
+.container2 {
+    line-height: 100vh;
+    text-align: center;
+    display: block;
+}
+
+.centered {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 100%;
+    background-color: aliceblue;
+    width: 400px;
+    height: auto;
+    min-height: 170px;
+    background-color: #eeeeee;
+}
+
+.controls {
+    max-width: 100%;
+    margin: 20px;
+}
+
+.label {
+    min-width: 140px;
+    float: left;
+    text-align: right;
+}
+
+.width-50 {
+    width: 50%;
+    height: 30px;
+}
+
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
+#change-password-container {
+    display: none;
+}
+
+.button {
+    background-color: #222831;
+    border: none;
+    color: white;
+    padding: 5px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.button-center {
+    text-align: center;
+    margin: auto;
+    margin-top:60px;
+    margin-bottom:10px
+}

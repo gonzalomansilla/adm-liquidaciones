@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="./js/jquery.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/VerEmpresas.js"></script>
+
+    <style>
+        .container {
+            width: 450px;
+            height: 100vh;
+        }
+
+        .containerEmpresa {
+            width: 70%;
+            box-shadow: 2px 11px 20px #000;
+            padding: 30px;
+            margin: auto;
+        }
+
+        #containerEmpresa {
+            display: none;
+        }
+
+      
+    </style>
+    <title></title>
+</head>
+<body>
+    <nav id="navbar-example2" class="navbar navbar-light bg-light">
+        <h1 class="empresa">Empresas</h1>
+        <!--<ul class="nav nav-pills">
+        <button type="button" class="btn btn-link">Link</button>
+        <li class="nav-item"><a class="nav-link" id="altaEmpresa">ALTA EMPRESA</a></li>
+
+    </ul>-->
+
+        <button type="button" id="altaEmpresa" class="btn btn-outline-primary">ALTA EMPRESA</button>
+        <a class="link" id="volver" href="./Tabla.html">HOME</a>
+    </nav>
+    
+         <div id="tabla"></div>
+
+    <div class="container">
+        <div id="containerEmpresa" class="containerEmpresa">
+            <form class="alta">
+                <h3>Datos de Empresa</h3>
+
+                <div class="form-group">
+                    <label for="formGroupExampleInput">Cuit Empresa</label>
+                    <input type="number" class="form-control" id="cuitEmpresa">
+                </div>
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Nombre</label>
+                    <input type="text" class="form-control" id="nombreEmpresa">
+                </div>
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Razon Social</label>
+                    <input type="text" class="form-control" id="razonSocial">
+                </div>
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Direccion Empresa</label>
+                    <input type="text" class="form-control" id="direccionEmpresa">
+                </div>
+                <button type="button" id="altaOk" class="btn btn-primary">Alta</button>
+                <a class="link" id="volver" href="VerEmpresas.html">Volver</a>
+            </form>
+
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+.container {
+    line-height: 70vh;
+    text-align: center;
+}
+
+.centered {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 100%;
+    width: 400px;
+}
+
+.card {    
+  padding: 15px;
+  max-width: 400px;
+  height: auto;
+  margin: 10px auto;
+  text-align: center;
+}
+
+.alert {  
+  padding: 15px;
+  max-width: 400px;
+  margin-top: 40px;
+  text-align: center;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.side {
+  -ms-flex: 28%;
+  flex: 28%;
+  background-color: #f1f1f1;
+  padding: 20px;
+  height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.main {   
+  -ms-flex: 70%;
+  flex: 70%;
+  background-color: white;
+  padding: 20px;
+  height: 400px;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.th {
+  text-align: center;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+@media screen and (max-width: 700px) {
+  .row {   
+      flex-direction: column;
+  }
+}
+
+/* Dates */
+.agenda .agenda-date { width: 170px; }
+.agenda .agenda-date .dayofmonth {
+  width: 40px;
+  font-size: 36px;
+  line-height: 36px;
+  float: left;
+  text-align: right;
+  margin-right: 10px; 
+}
+.agenda .agenda-date .shortdate {
+  font-size: 0.75em; 
+}
+
+
+/* Times */
+.agenda .agenda-time { width: 140px; } 
+
+
+/* Events */
+.agenda .agenda-events {  } 
+.agenda .agenda-events .agenda-event {  } 
+
+@media (max-width: 767px) {
+    
+}
+
+@import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css");

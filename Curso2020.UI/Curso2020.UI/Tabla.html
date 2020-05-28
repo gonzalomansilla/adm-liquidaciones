@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="js/jquery.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#nav").load("navbar.html");
+
+            $.fn.dibujarTabla = function (data) {
+                let html = "";
+                $.each(data.headers, function (index, value) {
+                    html += "<th>" + value + "</th>";
+                });
+                html = "<tr>" + html + "</tr>";
+                let row = "";
+                $.each(data.rows, function (index, value) {
+                    row = "";
+                    $.each(value, function (index, value) {
+                        row += "<td>" + value + "</td>";
+                    });
+                    html += "<tr>" + row + "</tr>"
+                });
+                html = "<table class='table'>" + html + "</table>"
+                this.html(html);
+            }
+
+            let token = localStorage.getItem("token");
+            if (token == null || token == "") {
+                alert("Error, vuelva a ingresar a su cuenta");
+                window.location = "/Login.html";
+            } else {
+                $.ajax({
+                    url: "https://localhost:5001/api/Liquidations/GetLiquidations",
+                    method: "GET",
+                    crossDomain: true,
+                    headers: {
+                        "Accept": "application/json",
+                        "Authorization": token,
+                    },
+                    dataType: 'json',
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        if (typeof data !== "object") {
+                            data = data.d || data;
+                            data = JSON.parse(data);
+                        }
+                        let html = "";
+                        $.each(data.headers, function (index, value) {
+                            html += "<th>" + value + "</th>";
+                        });
+                        html = "<tr>" + html + "</tr>";
+                        let row = "";
+                        $.each(data.rows, function (index, value) {
+                            row = "";
+                            $.each(value, function (index, value) {
+                                row += "<td>" + value + "</td>";
+                            });
+                            html += "<tr>" + row + "</tr>"
+                        });
+                        html = "<table class='table'>" + html + "</table>"
+                        document.getElementById("tabla").innerHTML = html;
+                    },
+                    error: function (xhr) {
+                        let response = JSON.parse(xhr.responseText);
+                        switch (xhr.status) {
+                            case 401:
+                                alert(response.message)
+                                window.location = "/Login.html";
+                                break;
+                            case 400:
+                            case 404:
+                                alert(response.message)
+                                break;
+                            default:
+                                alert(JSON.stringify(xhr));
+                        }
+                    }
+                });
+            }
+        });
+
+    </script>
+
+    <title>Liquidaciones</title>
+</head>
+<body>
+    <div id="nav"></div>
+    <h1>Liquidacion de sueldos</h1>
+    <div id="tabla"></div>
+</body>
+</html>
