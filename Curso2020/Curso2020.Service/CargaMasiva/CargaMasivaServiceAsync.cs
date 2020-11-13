@@ -28,7 +28,6 @@ namespace Curso2020.Service.CargaMasiva
 
 		public async Task<List<EmpleadoDTO>> ImportarArchivoEmpleados(IFormFile file)
 		{
-			//Existencia de archivo
 			ArchivoEmpleados archivoDB = await _context.ArchivosEmpleados
 				.Where(a => a.archivo == file.FileName).FirstOrDefaultAsync();
 			if (archivoDB != null)
@@ -43,7 +42,8 @@ namespace Curso2020.Service.CargaMasiva
 
 				empleados = await EliminarEmpleadosExistentesEnDB(empleados);
 				if (empleados.Count == 0)
-					throw HttpResponseException.BadRequest("Los empleados del archivo ya estan registrados. Pertenecen a otro de nombre diferente");
+					throw HttpResponseException
+						.BadRequest("Los empleados del archivo ya estan registrados. Pertenecen a otro de nombre diferente");
 
 				ArchivoEmpleados archivoDb = await SubirArchivo(file);
 				if (archivoDb != null)

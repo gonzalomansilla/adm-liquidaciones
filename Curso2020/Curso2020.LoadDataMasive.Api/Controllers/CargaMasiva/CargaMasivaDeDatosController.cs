@@ -31,7 +31,7 @@ namespace Curso2020.Management.Api.Controllers.CargaMasiva
 		[HttpPost("ImportarArchivoEmpleados")]
 		public async Task<ActionResult> ImportarArchivoEmpleados(IFormFile file)
 		{
-			if (file == null)
+			if (file is null)
 				return BadRequest(new ResultJson() { Message = "No se proporciono archivo para importar" });
 
 			List<EmpleadoDTO> empleados;
@@ -41,9 +41,7 @@ namespace Curso2020.Management.Api.Controllers.CargaMasiva
 			}
 			catch (HttpResponseException e)
 			{
-				int statusCode = e.Status;
-
-				return statusCode switch
+				return e.Status switch
 				{
 					400 => BadRequest(e.Value),
 					_ => StatusCode(500, $"Error en el servicio de Carga masiva\n{e.Value}")

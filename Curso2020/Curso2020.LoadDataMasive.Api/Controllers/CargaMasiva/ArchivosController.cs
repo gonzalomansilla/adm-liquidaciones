@@ -28,7 +28,7 @@ namespace Curso2020.Management.Api.Controllers.CargaMasiva
 		[HttpGet("EmpleadosDelArchivo")]
 		public async Task<ActionResult> EmpleadosDelArchivo(string nombreArchivo)
 		{
-			if (nombreArchivo == "" || nombreArchivo == null)
+			if (nombreArchivo == "" || nombreArchivo is null)
 				return BadRequest("No se proporciono un nombre de archivo");
 
 			bool esArchivoTxt = nombreArchivo.EndsWith(".txt");

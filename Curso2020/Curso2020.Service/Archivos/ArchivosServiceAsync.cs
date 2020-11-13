@@ -29,7 +29,7 @@ namespace Curso2020.Service.Archivos
 			var archivoDb = await _context.ArchivosEmpleados
 				.Where(a => a.archivo == nombreArchivo).FirstOrDefaultAsync();
 
-			if (archivoDb == null)
+			if (archivoDb is null)
 				throw HttpResponseException.Conflict("El archivo no existe en la base de datos");
 
 			List<Empleado> empleadosDB = await _context.Empleados
